@@ -1,3 +1,7 @@
+<?php
+session_start();  
+?>
+
 <html>
     <head>
         <meta charset="UTF-8">
@@ -16,11 +20,13 @@
             <?php
                 function h($str) { return htmlspecialchars($str, ENT_QUOTES, "UTF-8"); }
             $db = new PDO("sqlite:movie.sqlite");
-            $result=$db->query("SELECT * FROM evaluation where user_id=1");
+            $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING);
+            $result=$db->prepare("SELECT * FROM evaluation where user_id=?");
+            $result->execute(array($_SESSION["id"]));
                 for($i = 0; $row=$result->fetch(); ++$i ){  
                     $title=$db->prepare("SELECT * FROM movie where id = ?");
             $title->execute(array($row['movie_id']));
-                for($i = 0; $row2=$title->fetch(); ++$i ){           
+                for($i = 0; $row2=$title->fetch(); ++$i ){          
                     echo "<tr>";
                     echo "<td>". h($row2['title']). "</td>";
                     echo "<td>". h($row['excite']). "</td>";
@@ -32,7 +38,8 @@
             }
         }
             ?>
-            </table>             
+            </table>   
+            <a href="search.php">記事投稿</a>          
             </body>
             </html>
             
